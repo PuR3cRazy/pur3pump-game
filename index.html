@@ -58,13 +58,25 @@
   .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1a1a1a; border: 0.5px solid #444; border-radius: 8px; padding: 10px 20px; font-size: 14px; color: #f0f0f0; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 99; white-space: nowrap; }
   .toast.show { opacity: 1; }
   .brand { text-align: center; font-size: 11px; color: #333; margin-top: 2rem; }
+  .pending-box { background: #1a1a1a; border: 0.5px solid #BA7517; border-radius: 12px; padding: 1.5rem; text-align: center; margin-bottom: 1.5rem; }
+  .pending-box h2 { font-size: 18px; font-weight: 500; color: #BA7517; margin-bottom: 8px; }
+  .pending-box p { font-size: 14px; color: #888; margin-bottom: 1rem; }
+  .countdown-big { font-size: 32px; font-weight: 500; color: #f0f0f0; letter-spacing: 2px; }
+  .pending-coins { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-top: 1rem; }
+  .pending-coin { background: #111; border-radius: 8px; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+  .pending-coin .sym { color: #888; }
+  .pending-coin .dir-up { color: #1D9E75; font-weight: 500; }
+  .pending-coin .dir-down { color: #D85A30; font-weight: 500; }
+  .result-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 0.5px solid #2a2a2a; font-size: 14px; }
+  .result-correct { color: #1D9E75; }
+  .result-wrong { color: #D85A30; }
 </style>
 </head>
 <body>
 
 <div style="padding-top:1rem; margin-bottom:1.5rem; text-align:center;">
   <h1>PuR3PUMP price predictor</h1>
-  <p class="subtitle">Guess UP or DOWN for the next 24 hours &mdash; climb the leaderboard!</p>
+  <p class="subtitle">Guess UP or DOWN — results revealed after 24 hours!</p>
 </div>
 
 <div class="username-bar">
@@ -79,11 +91,7 @@
 </div>
 
 <div id="section-game" class="section active">
-  <div class="timer-bar">Next round resolves in: <span id="countdown">24:00:00</span></div>
-  <div class="coins-grid" id="coins-grid"></div>
-  <div class="submit-wrap">
-    <button class="submit-btn" id="submit-btn" onclick="submitGuesses()">Submit predictions</button>
-  </div>
+  <div id="game-area"></div>
 </div>
 
 <div id="section-leaderboard" class="section">
@@ -117,7 +125,9 @@ const COINS = [
   { symbol:'ADA', name:'Cardano',  color:'#85B7EB', bg:'#0a1828', ids:'cardano' },
 ];
 
-let prices = {}, changes = {}, votes = {}, submitted = false;
+const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+
+let prices = {}, changes = {}, votes = {};
 let username = localStorage.getItem('pur3_username') || '';
 const leaderboard = JSON.parse(localStorage.getItem('pur3_lb') || '[]');
 
@@ -143,11 +153,108 @@ async function fetchPrices() {
   } catch(e) {
     COINS.forEach(c => { if (!prices[c.symbol]) { prices[c.symbol] = 1000 + Math.random()*50000; changes[c.symbol] = (Math.random()*10)-5; } });
   }
+  renderGameArea();
+}
+
+function getPendingRound() {
+  const raw = localStorage.getItem('pur3_pending');
+  if (!raw) return null;
+  return JSON.parse(raw);
+}
+
+function renderGameArea() {
+  const area = document.getElementById('game-area');
+  const pending = getPendingRound();
+
+  if (pending) {
+    const now = Date.now();
+    const elapsed = now - pending.ts;
+    const remaining = TWENTY_FOUR_HOURS - elapsed;
+
+    if (remaining <= 0) {
+      resolveRound(pending);
+      return;
+    }
+
+    const h = Math.floor(remaining / 3600000);
+    const m = Math.floor((remaining % 3600000) / 60000);
+    const s = Math.floor((remaining % 60000) / 1000);
+    const countdown = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+
+    const coinsHtml = Object.entries(pending.votes).filter(([,d])=>d).map(([sym, dir]) => {
+      const entryPrice = pending.prices[sym] ? '$' + pending.prices[sym].toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
+      return `<div class="pending-coin">
+        <span class="sym">${sym} @ ${entryPrice}</span>
+        <span class="${dir==='up'?'dir-up':'dir-down'}">${dir==='up'?'UP':'DOWN'}</span>
+      </div>`;
+    }).join('');
+
+    area.innerHTML = `<div class="pending-box">
+      <h2>Predictions locked in!</h2>
+      <p>Results reveal in:</p>
+      <div class="countdown-big" id="live-countdown">${countdown}</div>
+      <div class="pending-coins">${coinsHtml}</div>
+    </div>`;
+
+    setTimeout(renderGameArea, 1000);
+    return;
+  }
+
+  area.innerHTML = `
+    <div class="timer-bar">Prices update every 60 seconds</div>
+    <div class="coins-grid" id="coins-grid"></div>
+    <div class="submit-wrap">
+      <button class="submit-btn" id="submit-btn" onclick="submitGuesses()">Submit predictions</button>
+    </div>`;
   renderCoins();
 }
 
+function resolveRound(pending) {
+  const area = document.getElementById('game-area');
+  let correct = 0;
+  const count = Object.values(pending.votes).filter(Boolean).length;
+  const rows = Object.entries(pending.votes).filter(([,d])=>d).map(([sym, dir]) => {
+    const entryPrice = pending.prices[sym] || 0;
+    const currentPrice = prices[sym] || entryPrice;
+    const actualDir = currentPrice >= entryPrice ? 'up' : 'down';
+    const isCorrect = actualDir === dir;
+    if (isCorrect) correct++;
+    const entryStr = '$' + entryPrice.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const currStr = '$' + currentPrice.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    return `<div class="result-row">
+      <span style="color:#888">${sym}</span>
+      <span style="color:#555">${entryStr} → ${currStr}</span>
+      <span style="color:#555">You: <b style="color:${dir==='up'?'#1D9E75':'#D85A30'}">${dir.toUpperCase()}</b></span>
+      <span class="${isCorrect?'result-correct':'result-wrong'}">${isCorrect?'Correct':'Wrong'}</span>
+    </div>`;
+  }).join('');
+
+  const pts = correct * 10 + (correct === count ? 25 : 0);
+  let player = leaderboard.find(p => p.name === pending.username);
+  if (!player) { player = { name: pending.username, points:0, correct:0, total:0, streak:0 }; leaderboard.push(player); }
+  player.total = (player.total||0) + count;
+  player.correct = (player.correct||0) + correct;
+  player.points = (player.points||0) + pts;
+  player.streak = correct === count ? (player.streak||0)+1 : 0;
+  leaderboard.sort((a,b) => b.points - a.points);
+  localStorage.setItem('pur3_lb', JSON.stringify(leaderboard));
+  localStorage.removeItem('pur3_pending');
+
+  area.innerHTML = `<div class="pending-box" style="border-color:${correct===count?'#1D9E75':'#BA7517'}">
+    <h2 style="color:${correct===count?'#1D9E75':'#BA7517'}">${correct===count?'Perfect round!':'Round complete!'}</h2>
+    <p style="margin-bottom:0.5rem">${correct}/${count} correct &mdash; +${pts} points</p>
+    <div style="margin: 1rem 0">${rows}</div>
+    <button class="submit-btn" onclick="newRound()" style="margin-top:0.5rem">Play next round</button>
+  </div>`;
+  renderLeaderboard();
+  renderMyStats();
+}
+
+function newRound() { votes = {}; renderGameArea(); }
+
 function renderCoins() {
   const grid = document.getElementById('coins-grid');
+  if (!grid) return;
   grid.innerHTML = COINS.map(c => {
     const price = prices[c.symbol] ? '$' + prices[c.symbol].toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : 'Loading...';
     const chg = changes[c.symbol] || 0;
@@ -155,7 +262,6 @@ function renderCoins() {
     const chgClass = chg >= 0 ? 'change-up' : 'change-down';
     const upSel = votes[c.symbol]==='up' ? 'selected' : '';
     const downSel = votes[c.symbol]==='down' ? 'selected' : '';
-    const dis = submitted ? 'disabled' : '';
     return `<div class="coin-card">
       <div class="coin-header">
         <div class="coin-icon" style="background:${c.bg};color:${c.color}">${c.symbol}</div>
@@ -163,15 +269,14 @@ function renderCoins() {
       </div>
       <div class="coin-change ${chgClass}">${chgStr}</div>
       <div class="vote-btns">
-        <button class="vote-btn up ${upSel}" onclick="vote('${c.symbol}','up')" ${dis}><i class="ti ti-trending-up"></i> Up</button>
-        <button class="vote-btn down ${downSel}" onclick="vote('${c.symbol}','down')" ${dis}><i class="ti ti-trending-down"></i> Down</button>
+        <button class="vote-btn up ${upSel}" onclick="vote('${c.symbol}','up')"><i class="ti ti-trending-up"></i> Up</button>
+        <button class="vote-btn down ${downSel}" onclick="vote('${c.symbol}','down')"><i class="ti ti-trending-down"></i> Down</button>
       </div>
     </div>`;
   }).join('');
 }
 
 function vote(sym, dir) {
-  if (submitted) return;
   votes[sym] = votes[sym] === dir ? null : dir;
   renderCoins();
 }
@@ -180,26 +285,10 @@ function submitGuesses() {
   if (!username) { showToast('Set your username first!'); return; }
   const count = Object.values(votes).filter(Boolean).length;
   if (count < 3) { showToast('Pick at least 3 coins!'); return; }
-  submitted = true;
-  document.getElementById('submit-btn').disabled = true;
-  document.getElementById('submit-btn').textContent = 'Predictions locked in!';
-
-  let player = leaderboard.find(p => p.name === username);
-  if (!player) { player = { name:username, points:0, correct:0, total:0, streak:0 }; leaderboard.push(player); }
-  player.total = (player.total||0) + count;
-
-  let correct = 0;
-  Object.entries(votes).forEach(([sym,dir]) => { if (!dir) return; if ((changes[sym]||0) >= 0 && dir==='up') correct++; else if ((changes[sym]||0) < 0 && dir==='down') correct++; });
-  const pts = correct * 10 + (correct === count ? 25 : 0);
-  player.correct = (player.correct||0) + correct;
-  player.points = (player.points||0) + pts;
-  player.streak = correct === count ? (player.streak||0)+1 : 0;
-
-  leaderboard.sort((a,b) => b.points - a.points);
-  localStorage.setItem('pur3_lb', JSON.stringify(leaderboard));
-  showToast(correct + '/' + count + ' correct! +' + pts + ' pts');
-  renderLeaderboard();
-  renderMyStats();
+  const pending = { username, votes: {...votes}, prices: {...prices}, ts: Date.now() };
+  localStorage.setItem('pur3_pending', JSON.stringify(pending));
+  showToast('Predictions locked! Come back in 24 hours!');
+  renderGameArea();
 }
 
 function renderLeaderboard() {
@@ -247,23 +336,12 @@ function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
-}
-
-function startCountdown() {
-  const end = new Date(); end.setHours(end.getHours()+24);
-  setInterval(() => {
-    const diff = end - Date.now();
-    if (diff <= 0) { document.getElementById('countdown').textContent = 'Resolving...'; return; }
-    const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
-    document.getElementById('countdown').textContent = String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-  }, 1000);
+  setTimeout(() => t.classList.remove('show'), 3000);
 }
 
 fetchPrices();
 renderLeaderboard();
 renderMyStats();
-startCountdown();
 setInterval(fetchPrices, 60000);
 </script>
 </body>
