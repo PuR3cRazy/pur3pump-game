@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PuR3PUMP Price Predictor</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f0f; color: #f0f0f0; min-height: 100vh; padding: 1rem; }
+  h1 { font-size: 22px; font-weight: 500; text-align: center; color: #f0f0f0; }
+  .subtitle { font-size: 14px; color: #888; text-align: center; margin-top: 4px; margin-bottom: 1.5rem; }
+  .username-bar { display: flex; gap: 8px; margin-bottom: 1.5rem; }
+  .username-bar input { flex: 1; padding: 8px 12px; border-radius: 8px; border: 0.5px solid #333; background: #1a1a1a; font-size: 14px; color: #f0f0f0; }
+  .username-bar input::placeholder { color: #555; }
+  .username-bar button { padding: 8px 16px; border-radius: 8px; border: 0.5px solid #444; background: #1a1a1a; font-size: 14px; cursor: pointer; color: #f0f0f0; }
+  .username-bar button:hover { background: #222; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 1.5rem; justify-content: center; }
+  .tab { padding: 6px 18px; border-radius: 8px; border: 0.5px solid #333; background: transparent; font-size: 14px; cursor: pointer; color: #888; }
+  .tab.active { background: #1a1a1a; color: #f0f0f0; font-weight: 500; border-color: #555; }
+  .coins-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
+  .coin-card { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 12px; padding: 1rem; }
+  .coin-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .coin-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; }
+  .coin-name { font-weight: 500; font-size: 15px; color: #f0f0f0; }
+  .coin-price { font-size: 13px; color: #888; }
+  .coin-change { font-size: 12px; margin-bottom: 12px; }
+  .change-up { color: #1D9E75; }
+  .change-down { color: #D85A30; }
+  .vote-btns { display: flex; gap: 8px; }
+  .vote-btn { flex: 1; padding: 7px 0; border-radius: 8px; border: 0.5px solid #333; background: transparent; font-size: 13px; cursor: pointer; color: #888; display: flex; align-items: center; justify-content: center; gap: 5px; }
+  .vote-btn.up.selected { background: #1a2e1a; border-color: #3B6D11; color: #1D9E75; }
+  .vote-btn.down.selected { background: #2e1a1a; border-color: #993C1D; color: #D85A30; }
+  .vote-btn:hover { background: #222; }
+  .submit-wrap { text-align: center; margin-bottom: 1.5rem; }
+  .submit-btn { padding: 10px 32px; border-radius: 8px; border: 0.5px solid #444; background: #1a1a1a; font-size: 15px; font-weight: 500; cursor: pointer; color: #f0f0f0; }
+  .submit-btn:hover { background: #222; }
+  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+  .stat-card { background: #1a1a1a; border-radius: 8px; padding: 1rem; text-align: center; }
+  .stat-label { font-size: 12px; color: #888; margin-bottom: 6px; }
+  .stat-value { font-size: 24px; font-weight: 500; color: #f0f0f0; }
+  .leaderboard { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 12px; overflow: hidden; }
+  .lb-header { display: grid; grid-template-columns: 44px 1fr 60px 70px 60px; padding: 10px 16px; background: #111; font-size: 12px; color: #666; font-weight: 500; }
+  .lb-row { display: grid; grid-template-columns: 44px 1fr 60px 70px 60px; padding: 12px 16px; border-top: 0.5px solid #2a2a2a; font-size: 14px; align-items: center; }
+  .lb-row:hover { background: #222; }
+  .lb-rank { font-weight: 500; color: #666; font-size: 13px; }
+  .lb-rank.gold { color: #BA7517; }
+  .lb-rank.silver { color: #888; }
+  .lb-rank.bronze { color: #993C1D; }
+  .lb-name { color: #f0f0f0; font-weight: 500; }
+  .lb-cell { text-align: right; color: #888; font-size: 13px; }
+  .streak-badge { display: inline-block; background: #2e1a1a; color: #D85A30; font-size: 11px; padding: 2px 8px; border-radius: 8px; }
+  .timer-bar { text-align: center; font-size: 13px; color: #666; margin-bottom: 1rem; }
+  .section { display: none; }
+  .section.active { display: block; }
+  .empty-state { text-align: center; color: #555; padding: 2rem; font-size: 14px; }
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1a1a1a; border: 0.5px solid #444; border-radius: 8px; padding: 10px 20px; font-size: 14px; color: #f0f0f0; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 99; white-space: nowrap; }
+  .toast.show { opacity: 1; }
+  .brand { text-align: center; font-size: 11px; color: #333; margin-top: 2rem; }
+</style>
+</head>
+<body>
+
+<div style="padding-top:1rem; margin-bottom:1.5rem; text-align:center;">
+  <h1>PuR3PUMP price predictor</h1>
+  <p class="subtitle">Guess UP or DOWN for the next 24 hours &mdash; climb the leaderboard!</p>
+</div>
+
+<div class="username-bar">
+  <input type="text" id="username-input" placeholder="Enter your Telegram username..." maxlength="32" />
+  <button onclick="setUsername()">Set name</button>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('game')">Predict</button>
+  <button class="tab" onclick="switchTab('leaderboard')">Leaderboard</button>
+  <button class="tab" onclick="switchTab('history')">My stats</button>
+</div>
+
+<div id="section-game" class="section active">
+  <div class="timer-bar">Next round resolves in: <span id="countdown">24:00:00</span></div>
+  <div class="coins-grid" id="coins-grid"></div>
+  <div class="submit-wrap">
+    <button class="submit-btn" id="submit-btn" onclick="submitGuesses()">Submit predictions</button>
+  </div>
+</div>
+
+<div id="section-leaderboard" class="section">
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Players today</div><div class="stat-value" id="stat-players">0</div></div>
+    <div class="stat-card"><div class="stat-label">Predictions made</div><div class="stat-value" id="stat-predictions">0</div></div>
+    <div class="stat-card"><div class="stat-label">Top streak</div><div class="stat-value" id="stat-streak">0</div></div>
+  </div>
+  <div class="leaderboard">
+    <div class="lb-header">
+      <div>#</div><div>Player</div><div style="text-align:right">Points</div><div style="text-align:right">Correct</div><div style="text-align:right">Streak</div>
+    </div>
+    <div id="lb-body"></div>
+  </div>
+</div>
+
+<div id="section-history" class="section">
+  <div id="my-stats-content" class="empty-state">Set your username above to track your stats.</div>
+</div>
+
+<div class="brand">PuR3PUMP &bull; t.me/PuR3PUMP_Official</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const COINS = [
+  { symbol:'BTC', name:'Bitcoin',  color:'#BA7517', bg:'#2a1f00', ids:'bitcoin' },
+  { symbol:'ETH', name:'Ethereum', color:'#9F99E8', bg:'#1a1830', ids:'ethereum' },
+  { symbol:'BNB', name:'BNB',      color:'#EF9F27', bg:'#2a1f00', ids:'binancecoin' },
+  { symbol:'SOL', name:'Solana',   color:'#5DCAA5', bg:'#0a2018', ids:'solana' },
+  { symbol:'XRP', name:'XRP',      color:'#85B7EB', bg:'#0a1828', ids:'ripple' },
+  { symbol:'ADA', name:'Cardano',  color:'#85B7EB', bg:'#0a1828', ids:'cardano' },
+];
+
+let prices = {}, changes = {}, votes = {}, submitted = false;
+let username = localStorage.getItem('pur3_username') || '';
+const leaderboard = JSON.parse(localStorage.getItem('pur3_lb') || '[]');
+
+if (username) document.getElementById('username-input').value = username;
+
+function setUsername() {
+  const val = document.getElementById('username-input').value.trim();
+  if (!val) { showToast('Please enter a username'); return; }
+  username = val;
+  localStorage.setItem('pur3_username', username);
+  showToast('Username set: ' + username);
+  renderMyStats();
+}
+
+async function fetchPrices() {
+  try {
+    const ids = COINS.map(c => c.ids).join(',');
+    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=' + ids + '&vs_currencies=usd&include_24hr_change=true');
+    const data = await res.json();
+    COINS.forEach(c => {
+      if (data[c.ids]) { prices[c.symbol] = data[c.ids].usd; changes[c.symbol] = data[c.ids].usd_24h_change || 0; }
+    });
+  } catch(e) {
+    COINS.forEach(c => { if (!prices[c.symbol]) { prices[c.symbol] = 1000 + Math.random()*50000; changes[c.symbol] = (Math.random()*10)-5; } });
+  }
+  renderCoins();
+}
+
+function renderCoins() {
+  const grid = document.getElementById('coins-grid');
+  grid.innerHTML = COINS.map(c => {
+    const price = prices[c.symbol] ? '$' + prices[c.symbol].toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : 'Loading...';
+    const chg = changes[c.symbol] || 0;
+    const chgStr = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '% (24h)';
+    const chgClass = chg >= 0 ? 'change-up' : 'change-down';
+    const upSel = votes[c.symbol]==='up' ? 'selected' : '';
+    const downSel = votes[c.symbol]==='down' ? 'selected' : '';
+    const dis = submitted ? 'disabled' : '';
+    return `<div class="coin-card">
+      <div class="coin-header">
+        <div class="coin-icon" style="background:${c.bg};color:${c.color}">${c.symbol}</div>
+        <div><div class="coin-name">${c.name}</div><div class="coin-price">${price}</div></div>
+      </div>
+      <div class="coin-change ${chgClass}">${chgStr}</div>
+      <div class="vote-btns">
+        <button class="vote-btn up ${upSel}" onclick="vote('${c.symbol}','up')" ${dis}><i class="ti ti-trending-up"></i> Up</button>
+        <button class="vote-btn down ${downSel}" onclick="vote('${c.symbol}','down')" ${dis}><i class="ti ti-trending-down"></i> Down</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function vote(sym, dir) {
+  if (submitted) return;
+  votes[sym] = votes[sym] === dir ? null : dir;
+  renderCoins();
+}
+
+function submitGuesses() {
+  if (!username) { showToast('Set your username first!'); return; }
+  const count = Object.values(votes).filter(Boolean).length;
+  if (count < 3) { showToast('Pick at least 3 coins!'); return; }
+  submitted = true;
+  document.getElementById('submit-btn').disabled = true;
+  document.getElementById('submit-btn').textContent = 'Predictions locked in!';
+
+  let player = leaderboard.find(p => p.name === username);
+  if (!player) { player = { name:username, points:0, correct:0, total:0, streak:0 }; leaderboard.push(player); }
+  player.total = (player.total||0) + count;
+
+  let correct = 0;
+  Object.entries(votes).forEach(([sym,dir]) => { if (!dir) return; if ((changes[sym]||0) >= 0 && dir==='up') correct++; else if ((changes[sym]||0) < 0 && dir==='down') correct++; });
+  const pts = correct * 10 + (correct === count ? 25 : 0);
+  player.correct = (player.correct||0) + correct;
+  player.points = (player.points||0) + pts;
+  player.streak = correct === count ? (player.streak||0)+1 : 0;
+
+  leaderboard.sort((a,b) => b.points - a.points);
+  localStorage.setItem('pur3_lb', JSON.stringify(leaderboard));
+  showToast(correct + '/' + count + ' correct! +' + pts + ' pts');
+  renderLeaderboard();
+  renderMyStats();
+}
+
+function renderLeaderboard() {
+  const body = document.getElementById('lb-body');
+  if (!leaderboard.length) { body.innerHTML = '<div class="empty-state">No players yet — be the first!</div>'; return; }
+  body.innerHTML = leaderboard.slice(0,20).map((p,i) => {
+    const rc = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    const rl = i===0?'1st':i===1?'2nd':i===2?'3rd':(i+1)+'th';
+    const streak = p.streak > 1 ? '<span class="streak-badge">'+p.streak+' streak</span>' : (p.streak||0);
+    return `<div class="lb-row"><div class="lb-rank ${rc}">${rl}</div><div class="lb-name">${p.name}</div><div class="lb-cell">${p.points||0}</div><div class="lb-cell">${p.correct||0}/${p.total||0}</div><div class="lb-cell">${streak}</div></div>`;
+  }).join('');
+  document.getElementById('stat-players').textContent = leaderboard.length;
+  document.getElementById('stat-predictions').textContent = leaderboard.reduce((s,p)=>s+(p.total||0),0);
+  document.getElementById('stat-streak').textContent = Math.max(...leaderboard.map(p=>p.streak||0),0);
+}
+
+function renderMyStats() {
+  const el = document.getElementById('my-stats-content');
+  if (!username) { el.innerHTML = '<div class="empty-state">Set your username above to track your stats.</div>'; return; }
+  const player = leaderboard.find(p => p.name === username);
+  const rank = leaderboard.findIndex(p => p.name === username) + 1;
+  if (!player) { el.innerHTML = '<div class="empty-state">No predictions yet, ' + username + '. Make your first prediction!</div>'; return; }
+  const acc = player.total ? Math.round((player.correct/player.total)*100) : 0;
+  el.innerHTML = `<div class="stats-grid" style="margin-bottom:1.5rem">
+    <div class="stat-card"><div class="stat-label">Rank</div><div class="stat-value">#${rank}</div></div>
+    <div class="stat-card"><div class="stat-label">Points</div><div class="stat-value">${player.points}</div></div>
+    <div class="stat-card"><div class="stat-label">Accuracy</div><div class="stat-value">${acc}%</div></div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Correct</div><div class="stat-value">${player.correct}</div></div>
+    <div class="stat-card"><div class="stat-label">Total picks</div><div class="stat-value">${player.total}</div></div>
+    <div class="stat-card"><div class="stat-label">Best streak</div><div class="stat-value">${player.streak}</div></div>
+  </div>`;
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['game','leaderboard','history'][i]===tab));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('section-'+tab).classList.add('active');
+  if (tab==='leaderboard') renderLeaderboard();
+  if (tab==='history') renderMyStats();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function startCountdown() {
+  const end = new Date(); end.setHours(end.getHours()+24);
+  setInterval(() => {
+    const diff = end - Date.now();
+    if (diff <= 0) { document.getElementById('countdown').textContent = 'Resolving...'; return; }
+    const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
+    document.getElementById('countdown').textContent = String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  }, 1000);
+}
+
+fetchPrices();
+renderLeaderboard();
+renderMyStats();
+startCountdown();
+setInterval(fetchPrices, 60000);
+</script>
+</body>
+</html>
