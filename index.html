@@ -10,11 +10,17 @@
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f0f; color: #f0f0f0; min-height: 100vh; padding: 1rem; }
   h1 { font-size: 22px; font-weight: 500; text-align: center; color: #f0f0f0; }
   .subtitle { font-size: 14px; color: #888; text-align: center; margin-top: 4px; margin-bottom: 1.5rem; }
-  .username-bar { display: flex; gap: 8px; margin-bottom: 1.5rem; }
+  .username-bar { display: flex; gap: 8px; margin-bottom: 1rem; }
   .username-bar input { flex: 1; padding: 8px 12px; border-radius: 8px; border: 0.5px solid #333; background: #1a1a1a; font-size: 14px; color: #f0f0f0; }
   .username-bar input::placeholder { color: #555; }
   .username-bar button { padding: 8px 16px; border-radius: 8px; border: 0.5px solid #444; background: #1a1a1a; font-size: 14px; cursor: pointer; color: #f0f0f0; }
   .username-bar button:hover { background: #222; }
+  .streak-bar { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 1.2rem; flex-wrap: wrap; }
+  .streak-pill { background: #1a1a1a; border: 0.5px solid #333; border-radius: 20px; padding: 5px 14px; font-size: 13px; color: #888; display: flex; align-items: center; gap: 6px; }
+  .streak-pill.active { border-color: #BA7517; color: #BA7517; }
+  .badge-row { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 1rem; }
+  .badge { background: #1a1a1a; border: 0.5px solid #333; border-radius: 20px; padding: 4px 12px; font-size: 12px; color: #555; }
+  .badge.earned { border-color: #BA7517; color: #BA7517; }
   .tabs { display: flex; gap: 8px; margin-bottom: 1.5rem; justify-content: center; }
   .tab { padding: 6px 18px; border-radius: 8px; border: 0.5px solid #333; background: transparent; font-size: 14px; cursor: pointer; color: #888; }
   .tab.active { background: #1a1a1a; color: #f0f0f0; font-weight: 500; border-color: #555; }
@@ -32,6 +38,10 @@
   .vote-btn.up.selected { background: #1a2e1a; border-color: #3B6D11; color: #1D9E75; }
   .vote-btn.down.selected { background: #2e1a1a; border-color: #993C1D; color: #D85A30; }
   .vote-btn:hover { background: #222; }
+  .multiplier-row { display: flex; gap: 8px; margin-bottom: 1.5rem; justify-content: center; align-items: center; }
+  .multiplier-row label { font-size: 13px; color: #888; }
+  .mult-btn { padding: 5px 14px; border-radius: 8px; border: 0.5px solid #333; background: transparent; font-size: 13px; cursor: pointer; color: #888; }
+  .mult-btn.active { border-color: #BA7517; color: #BA7517; background: #1a1500; }
   .submit-wrap { text-align: center; margin-bottom: 1.5rem; }
   .submit-btn { padding: 10px 32px; border-radius: 8px; border: 0.5px solid #444; background: #1a1a1a; font-size: 15px; font-weight: 500; cursor: pointer; color: #f0f0f0; }
   .submit-btn:hover { background: #222; }
@@ -48,10 +58,9 @@
   .lb-rank.gold { color: #BA7517; }
   .lb-rank.silver { color: #888; }
   .lb-rank.bronze { color: #993C1D; }
-  .lb-name { color: #f0f0f0; font-weight: 500; }
+  .lb-name { color: #f0f0f0; font-weight: 500; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .lb-cell { text-align: right; color: #888; font-size: 13px; }
   .streak-badge { display: inline-block; background: #2e1a1a; color: #D85A30; font-size: 11px; padding: 2px 8px; border-radius: 8px; }
-  .timer-bar { text-align: center; font-size: 13px; color: #666; margin-bottom: 1rem; }
   .section { display: none; }
   .section.active { display: block; }
   .empty-state { text-align: center; color: #555; padding: 2rem; font-size: 14px; }
@@ -67,14 +76,24 @@
   .pending-coin .sym { color: #888; }
   .pending-coin .dir-up { color: #1D9E75; font-weight: 500; }
   .pending-coin .dir-down { color: #D85A30; font-weight: 500; }
-  .result-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 0.5px solid #2a2a2a; font-size: 14px; }
+  .result-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 0.5px solid #2a2a2a; font-size: 13px; gap: 8px; flex-wrap: wrap; }
   .result-correct { color: #1D9E75; }
   .result-wrong { color: #D85A30; }
+  .share-card { background: #111; border: 0.5px solid #333; border-radius: 12px; padding: 1rem; margin-top: 1rem; text-align: center; }
+  .share-card p { font-size: 13px; color: #888; margin-bottom: 8px; }
+  .share-text { background: #1a1a1a; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #f0f0f0; text-align: left; margin-bottom: 8px; line-height: 1.6; }
+  .share-btn { padding: 7px 20px; border-radius: 8px; border: 0.5px solid #444; background: #1a1a1a; font-size: 13px; cursor: pointer; color: #f0f0f0; }
+  .share-btn:hover { background: #222; }
+  .weekly-reset { font-size: 12px; color: #555; text-align: center; margin-bottom: 1rem; }
+  .notif-bar { background: #1a1500; border: 0.5px solid #BA7517; border-radius: 8px; padding: 10px 14px; margin-bottom: 1rem; font-size: 13px; color: #BA7517; display: flex; align-items: center; gap: 8px; }
+  .notif-bar input { flex: 1; background: transparent; border: none; font-size: 13px; color: #f0f0f0; outline: none; }
+  .notif-bar input::placeholder { color: #555; }
+  .notif-bar button { padding: 5px 12px; border-radius: 6px; border: 0.5px solid #BA7517; background: transparent; font-size: 12px; cursor: pointer; color: #BA7517; }
 </style>
 </head>
 <body>
 
-<div style="padding-top:1rem; margin-bottom:1.5rem; text-align:center;">
+<div style="padding-top:1rem; margin-bottom:1rem; text-align:center;">
   <h1>PuR3PUMP price predictor</h1>
   <p class="subtitle">Guess UP or DOWN — results revealed after 24 hours!</p>
 </div>
@@ -82,6 +101,15 @@
 <div class="username-bar">
   <input type="text" id="username-input" placeholder="Enter your Telegram username..." maxlength="32" />
   <button onclick="setUsername()">Set name</button>
+</div>
+
+<div id="streak-bar" class="streak-bar"></div>
+<div id="badge-row" class="badge-row"></div>
+
+<div class="notif-bar">
+  <i class="ti ti-bell"></i>
+  <input type="text" id="notif-username" placeholder="Telegram username for result notifications (e.g. @yourname)" />
+  <button onclick="saveNotif()">Notify me</button>
 </div>
 
 <div class="tabs">
@@ -95,8 +123,9 @@
 </div>
 
 <div id="section-leaderboard" class="section">
+  <div class="weekly-reset" id="weekly-reset"></div>
   <div class="stats-grid">
-    <div class="stat-card"><div class="stat-label">Players today</div><div class="stat-value" id="stat-players">0</div></div>
+    <div class="stat-card"><div class="stat-label">Players this week</div><div class="stat-value" id="stat-players">0</div></div>
     <div class="stat-card"><div class="stat-label">Predictions made</div><div class="stat-value" id="stat-predictions">0</div></div>
     <div class="stat-card"><div class="stat-label">Top streak</div><div class="stat-value" id="stat-streak">0</div></div>
   </div>
@@ -125,11 +154,37 @@ const COINS = [
   { symbol:'ADA', name:'Cardano',  color:'#85B7EB', bg:'#0a1828', ids:'cardano' },
 ];
 
-const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+const BADGES = [
+  { id:'first_blood',  label:'First Blood',   desc:'First correct prediction',  check: p => p.correct >= 1 },
+  { id:'hot_streak_3', label:'On Fire 🔥',     desc:'3-day win streak',           check: p => p.dailyStreak >= 3 },
+  { id:'hot_streak_7', label:'Unstoppable ⚡', desc:'7-day win streak',           check: p => p.dailyStreak >= 7 },
+  { id:'perfect_5',    label:'Sharp Eye 👁',   desc:'5 perfect rounds',           check: p => (p.perfectRounds||0) >= 5 },
+  { id:'centurion',    label:'Centurion 💯',   desc:'100 correct predictions',    check: p => p.correct >= 100 },
+  { id:'veteran',      label:'Veteran 🏆',     desc:'30 days played',             check: p => (p.daysPlayed||0) >= 30 },
+];
 
-let prices = {}, changes = {}, votes = {};
+const STREAK_MULTIPLIERS = { 1:1, 2:1, 3:1.5, 5:2, 7:3 };
+const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
+let prices = {}, changes = {}, votes = {}, multiplier = 1;
 let username = localStorage.getItem('pur3_username') || '';
-const leaderboard = JSON.parse(localStorage.getItem('pur3_lb') || '[]');
+let leaderboard = JSON.parse(localStorage.getItem('pur3_lb') || '[]');
+
+// Weekly reset
+const weekStart = getWeekStart();
+const lastWeek = localStorage.getItem('pur3_week');
+if (lastWeek !== weekStart) {
+  leaderboard.forEach(p => { p.weekPoints = 0; p.weekCorrect = 0; });
+  localStorage.setItem('pur3_week', weekStart);
+  localStorage.setItem('pur3_lb', JSON.stringify(leaderboard));
+}
+
+function getWeekStart() {
+  const d = new Date(); d.setHours(0,0,0,0);
+  d.setDate(d.getDate() - d.getDay());
+  return d.toISOString().split('T')[0];
+}
 
 if (username) document.getElementById('username-input').value = username;
 
@@ -139,7 +194,42 @@ function setUsername() {
   username = val;
   localStorage.setItem('pur3_username', username);
   showToast('Username set: ' + username);
+  renderStreakBar();
   renderMyStats();
+}
+
+function saveNotif() {
+  const val = document.getElementById('notif-username').value.trim();
+  if (!val) { showToast('Enter your Telegram username'); return; }
+  localStorage.setItem('pur3_notif', val);
+  showToast('Notifications saved for ' + val + '!');
+}
+
+function getStreakMultiplier(streak) {
+  const keys = Object.keys(STREAK_MULTIPLIERS).map(Number).sort((a,b)=>b-a);
+  for (const k of keys) { if (streak >= k) return STREAK_MULTIPLIERS[k]; }
+  return 1;
+}
+
+function renderStreakBar() {
+  const bar = document.getElementById('streak-bar');
+  const player = leaderboard.find(p => p.name === username);
+  const streak = player ? (player.dailyStreak || 0) : 0;
+  const mult = getStreakMultiplier(streak);
+  bar.innerHTML = `
+    <div class="streak-pill ${streak > 0 ? 'active' : ''}"><i class="ti ti-flame"></i> ${streak} day streak</div>
+    <div class="streak-pill ${mult > 1 ? 'active' : ''}"><i class="ti ti-multiplier-2x"></i> ${mult}x multiplier</div>
+    <div class="streak-pill"><i class="ti ti-trophy"></i> ${player ? player.points : 0} pts total</div>
+  `;
+  renderBadges(player);
+}
+
+function renderBadges(player) {
+  const row = document.getElementById('badge-row');
+  row.innerHTML = BADGES.map(b => {
+    const earned = player && b.check(player);
+    return `<div class="badge ${earned ? 'earned' : ''}" title="${b.desc}">${b.label}</div>`;
+  }).join('');
 }
 
 async function fetchPrices() {
@@ -147,9 +237,7 @@ async function fetchPrices() {
     const ids = COINS.map(c => c.ids).join(',');
     const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=' + ids + '&vs_currencies=usd&include_24hr_change=true');
     const data = await res.json();
-    COINS.forEach(c => {
-      if (data[c.ids]) { prices[c.symbol] = data[c.ids].usd; changes[c.symbol] = data[c.ids].usd_24h_change || 0; }
-    });
+    COINS.forEach(c => { if (data[c.ids]) { prices[c.symbol] = data[c.ids].usd; changes[c.symbol] = data[c.ids].usd_24h_change || 0; } });
   } catch(e) {
     COINS.forEach(c => { if (!prices[c.symbol]) { prices[c.symbol] = 1000 + Math.random()*50000; changes[c.symbol] = (Math.random()*10)-5; } });
   }
@@ -158,8 +246,7 @@ async function fetchPrices() {
 
 function getPendingRound() {
   const raw = localStorage.getItem('pur3_pending');
-  if (!raw) return null;
-  return JSON.parse(raw);
+  return raw ? JSON.parse(raw) : null;
 }
 
 function renderGameArea() {
@@ -167,107 +254,67 @@ function renderGameArea() {
   const pending = getPendingRound();
 
   if (pending) {
-    const now = Date.now();
-    const elapsed = now - pending.ts;
-    const remaining = TWENTY_FOUR_HOURS - elapsed;
-
-    if (remaining <= 0) {
-      resolveRound(pending);
-      return;
-    }
-
-    const h = Math.floor(remaining / 3600000);
-    const m = Math.floor((remaining % 3600000) / 60000);
-    const s = Math.floor((remaining % 60000) / 1000);
-    const countdown = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-
-    const coinsHtml = Object.entries(pending.votes).filter(([,d])=>d).map(([sym, dir]) => {
-      const entryPrice = pending.prices[sym] ? '$' + pending.prices[sym].toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
-      return `<div class="pending-coin">
-        <span class="sym">${sym} @ ${entryPrice}</span>
-        <span class="${dir==='up'?'dir-up':'dir-down'}">${dir==='up'?'UP':'DOWN'}</span>
-      </div>`;
+    const remaining = TWENTY_FOUR_HOURS - (Date.now() - pending.ts);
+    if (remaining <= 0) { resolveRound(pending); return; }
+    const h = Math.floor(remaining/3600000), m = Math.floor((remaining%3600000)/60000), s = Math.floor((remaining%60000)/1000);
+    const coinsHtml = Object.entries(pending.votes).filter(([,d])=>d).map(([sym,dir]) => {
+      const ep = pending.prices[sym] ? '$'+pending.prices[sym].toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
+      return `<div class="pending-coin"><span class="sym">${sym} @ ${ep}</span><span class="${dir==='up'?'dir-up':'dir-down'}">${dir.toUpperCase()}</span></div>`;
     }).join('');
-
     area.innerHTML = `<div class="pending-box">
       <h2>Predictions locked in!</h2>
       <p>Results reveal in:</p>
-      <div class="countdown-big" id="live-countdown">${countdown}</div>
+      <div class="countdown-big">${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}</div>
+      <div style="font-size:12px;color:#555;margin-top:6px">Multiplier active: ${pending.multiplier}x</div>
       <div class="pending-coins">${coinsHtml}</div>
     </div>`;
-
     setTimeout(renderGameArea, 1000);
     return;
   }
 
   area.innerHTML = `
-    <div class="timer-bar">Prices update every 60 seconds</div>
+    <div style="font-size:13px;color:#888;text-align:center;margin-bottom:1rem">Prices refresh every 60s</div>
     <div class="coins-grid" id="coins-grid"></div>
-    <div class="submit-wrap">
-      <button class="submit-btn" id="submit-btn" onclick="submitGuesses()">Submit predictions</button>
-    </div>`;
+    <div class="multiplier-row">
+      <label>Streak multiplier:</label>
+      <button class="mult-btn active" id="mult-1" onclick="setMult(1)">1x</button>
+      <button class="mult-btn" id="mult-2" onclick="setMult(2)">2x</button>
+      <button class="mult-btn" id="mult-3" onclick="setMult(3)">3x</button>
+    </div>
+    <div style="font-size:12px;color:#555;text-align:center;margin-bottom:1rem">Higher multiplier = higher risk. Only available with active streak.</div>
+    <div class="submit-wrap"><button class="submit-btn" onclick="submitGuesses()">Submit predictions</button></div>`;
   renderCoins();
+  updateMultButtons();
 }
 
-function resolveRound(pending) {
-  const area = document.getElementById('game-area');
-  let correct = 0;
-  const count = Object.values(pending.votes).filter(Boolean).length;
-  const rows = Object.entries(pending.votes).filter(([,d])=>d).map(([sym, dir]) => {
-    const entryPrice = pending.prices[sym] || 0;
-    const currentPrice = prices[sym] || entryPrice;
-    const actualDir = currentPrice >= entryPrice ? 'up' : 'down';
-    const isCorrect = actualDir === dir;
-    if (isCorrect) correct++;
-    const entryStr = '$' + entryPrice.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-    const currStr = '$' + currentPrice.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-    return `<div class="result-row">
-      <span style="color:#888">${sym}</span>
-      <span style="color:#555">${entryStr} → ${currStr}</span>
-      <span style="color:#555">You: <b style="color:${dir==='up'?'#1D9E75':'#D85A30'}">${dir.toUpperCase()}</b></span>
-      <span class="${isCorrect?'result-correct':'result-wrong'}">${isCorrect?'Correct':'Wrong'}</span>
-    </div>`;
-  }).join('');
-
-  const pts = correct * 10 + (correct === count ? 25 : 0);
-  let player = leaderboard.find(p => p.name === pending.username);
-  if (!player) { player = { name: pending.username, points:0, correct:0, total:0, streak:0 }; leaderboard.push(player); }
-  player.total = (player.total||0) + count;
-  player.correct = (player.correct||0) + correct;
-  player.points = (player.points||0) + pts;
-  player.streak = correct === count ? (player.streak||0)+1 : 0;
-  leaderboard.sort((a,b) => b.points - a.points);
-  localStorage.setItem('pur3_lb', JSON.stringify(leaderboard));
-  localStorage.removeItem('pur3_pending');
-
-  area.innerHTML = `<div class="pending-box" style="border-color:${correct===count?'#1D9E75':'#BA7517'}">
-    <h2 style="color:${correct===count?'#1D9E75':'#BA7517'}">${correct===count?'Perfect round!':'Round complete!'}</h2>
-    <p style="margin-bottom:0.5rem">${correct}/${count} correct &mdash; +${pts} points</p>
-    <div style="margin: 1rem 0">${rows}</div>
-    <button class="submit-btn" onclick="newRound()" style="margin-top:0.5rem">Play next round</button>
-  </div>`;
-  renderLeaderboard();
-  renderMyStats();
+function setMult(m) {
+  const player = leaderboard.find(p => p.name === username);
+  const streak = player ? (player.dailyStreak||0) : 0;
+  if (m === 2 && streak < 3) { showToast('Need 3-day streak for 2x!'); return; }
+  if (m === 3 && streak < 7) { showToast('Need 7-day streak for 3x!'); return; }
+  multiplier = m;
+  updateMultButtons();
 }
 
-function newRound() { votes = {}; renderGameArea(); }
+function updateMultButtons() {
+  [1,2,3].forEach(m => { const b = document.getElementById('mult-'+m); if(b) b.classList.toggle('active', multiplier===m); });
+}
 
 function renderCoins() {
   const grid = document.getElementById('coins-grid');
   if (!grid) return;
   grid.innerHTML = COINS.map(c => {
-    const price = prices[c.symbol] ? '$' + prices[c.symbol].toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : 'Loading...';
-    const chg = changes[c.symbol] || 0;
-    const chgStr = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '% (24h)';
-    const chgClass = chg >= 0 ? 'change-up' : 'change-down';
-    const upSel = votes[c.symbol]==='up' ? 'selected' : '';
-    const downSel = votes[c.symbol]==='down' ? 'selected' : '';
+    const price = prices[c.symbol] ? '$'+prices[c.symbol].toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : 'Loading...';
+    const chg = changes[c.symbol]||0;
+    const chgStr = (chg>=0?'+':'')+chg.toFixed(2)+'% (24h)';
+    const upSel = votes[c.symbol]==='up'?'selected':'';
+    const downSel = votes[c.symbol]==='down'?'selected':'';
     return `<div class="coin-card">
       <div class="coin-header">
         <div class="coin-icon" style="background:${c.bg};color:${c.color}">${c.symbol}</div>
         <div><div class="coin-name">${c.name}</div><div class="coin-price">${price}</div></div>
       </div>
-      <div class="coin-change ${chgClass}">${chgStr}</div>
+      <div class="coin-change ${chg>=0?'change-up':'change-down'}">${chgStr}</div>
       <div class="vote-btns">
         <button class="vote-btn up ${upSel}" onclick="vote('${c.symbol}','up')"><i class="ti ti-trending-up"></i> Up</button>
         <button class="vote-btn down ${downSel}" onclick="vote('${c.symbol}','down')"><i class="ti ti-trending-down"></i> Down</button>
@@ -276,57 +323,140 @@ function renderCoins() {
   }).join('');
 }
 
-function vote(sym, dir) {
-  votes[sym] = votes[sym] === dir ? null : dir;
-  renderCoins();
-}
+function vote(sym, dir) { votes[sym] = votes[sym]===dir?null:dir; renderCoins(); }
 
 function submitGuesses() {
   if (!username) { showToast('Set your username first!'); return; }
   const count = Object.values(votes).filter(Boolean).length;
   if (count < 3) { showToast('Pick at least 3 coins!'); return; }
-  const pending = { username, votes: {...votes}, prices: {...prices}, ts: Date.now() };
+  const pending = { username, votes:{...votes}, prices:{...prices}, ts:Date.now(), multiplier };
   localStorage.setItem('pur3_pending', JSON.stringify(pending));
-  showToast('Predictions locked! Come back in 24 hours!');
+  showToast('Locked in! Come back in 24 hours! 🚀');
   renderGameArea();
 }
 
+function resolveRound(pending) {
+  const area = document.getElementById('game-area');
+  const count = Object.values(pending.votes).filter(Boolean).length;
+  let correct = 0;
+  const rows = Object.entries(pending.votes).filter(([,d])=>d).map(([sym,dir]) => {
+    const ep = pending.prices[sym]||0, cp = prices[sym]||ep;
+    const actual = cp >= ep ? 'up' : 'down';
+    const ok = actual === dir;
+    if (ok) correct++;
+    return `<div class="result-row">
+      <span style="color:#888">${sym}</span>
+      <span style="color:#555">$${ep.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})} → $${cp.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</span>
+      <span style="color:#555">You: <b style="color:${dir==='up'?'#1D9E75':'#D85A30'}">${dir.toUpperCase()}</b></span>
+      <span class="${ok?'result-correct':'result-wrong'}">${ok?'✓':'✗'}</span>
+    </div>`;
+  }).join('');
+
+  let player = leaderboard.find(p => p.name === pending.username);
+  if (!player) { player = {name:pending.username,points:0,weekPoints:0,correct:0,weekCorrect:0,total:0,dailyStreak:0,lastPlayed:0,perfectRounds:0,daysPlayed:0}; leaderboard.push(player); }
+
+  const today = new Date().toDateString();
+  const lastDay = player.lastPlayed ? new Date(player.lastPlayed).toDateString() : null;
+  const yesterday = new Date(Date.now()-86400000).toDateString();
+  if (lastDay !== today) {
+    player.dailyStreak = lastDay === yesterday ? (player.dailyStreak||0)+1 : 1;
+    player.daysPlayed = (player.daysPlayed||0)+1;
+    player.lastPlayed = Date.now();
+  }
+
+  const mult = pending.multiplier || 1;
+  const basePts = correct * 10 + (correct===count?25:0);
+  const pts = Math.round(basePts * mult);
+
+  player.total = (player.total||0)+count;
+  player.correct = (player.correct||0)+correct;
+  player.points = (player.points||0)+pts;
+  player.weekPoints = (player.weekPoints||0)+pts;
+  player.weekCorrect = (player.weekCorrect||0)+correct;
+  if (correct===count) player.perfectRounds = (player.perfectRounds||0)+1;
+
+  // Check badges
+  const newBadges = BADGES.filter(b => b.check(player) && !((player.badges||[]).includes(b.id)));
+  if (newBadges.length) { player.badges = [...(player.badges||[]), ...newBadges.map(b=>b.id)]; }
+
+  leaderboard.sort((a,b)=>(b.weekPoints||0)-(a.weekPoints||0));
+  localStorage.setItem('pur3_lb', JSON.stringify(leaderboard));
+  localStorage.removeItem('pur3_pending');
+
+  const shareText = `🎯 PuR3PUMP Predictor\n${correct}/${count} correct today! ${correct===count?'Perfect round! 🏆':''}\n+${pts} pts (${mult}x multiplier)\nStreak: ${player.dailyStreak} days 🔥\nt.me/PuR3_BOT?game=PuR3PUMP_Predict`;
+
+  const badgeHtml = newBadges.length ? `<div style="margin:8px 0;font-size:13px;color:#BA7517">🏅 New badge${newBadges.length>1?'s':''}: ${newBadges.map(b=>b.label).join(', ')}</div>` : '';
+
+  area.innerHTML = `<div class="pending-box" style="border-color:${correct===count?'#1D9E75':'#BA7517'}">
+    <h2 style="color:${correct===count?'#1D9E75':'#BA7517'}">${correct===count?'Perfect round! 🏆':'Round complete!'}</h2>
+    <p>${correct}/${count} correct &mdash; +${pts} pts (${mult}x multiplier)</p>
+    ${badgeHtml}
+    <div style="margin:1rem 0">${rows}</div>
+    <div class="share-card">
+      <p>Share your result:</p>
+      <div class="share-text" id="share-text">${shareText}</div>
+      <button class="share-btn" onclick="copyShare()"><i class="ti ti-copy"></i> Copy to clipboard</button>
+    </div>
+    <button class="submit-btn" onclick="newRound()" style="margin-top:1rem">Play next round</button>
+  </div>`;
+
+  renderLeaderboard();
+  renderMyStats();
+  renderStreakBar();
+}
+
+function copyShare() {
+  const text = document.getElementById('share-text').innerText;
+  navigator.clipboard.writeText(text).then(() => showToast('Copied! Share it in the channel 🚀'));
+}
+
+function newRound() { votes = {}; multiplier = 1; renderGameArea(); }
+
 function renderLeaderboard() {
   const body = document.getElementById('lb-body');
+  const weekEnd = new Date(new Date(getWeekStart()).getTime() + WEEK_MS);
+  const diff = weekEnd - Date.now();
+  const dh = Math.floor(diff/3600000), dm = Math.floor((diff%3600000)/60000);
+  document.getElementById('weekly-reset').textContent = `Weekly leaderboard resets in ${dh}h ${dm}m`;
   if (!leaderboard.length) { body.innerHTML = '<div class="empty-state">No players yet — be the first!</div>'; return; }
   body.innerHTML = leaderboard.slice(0,20).map((p,i) => {
     const rc = i===0?'gold':i===1?'silver':i===2?'bronze':'';
     const rl = i===0?'1st':i===1?'2nd':i===2?'3rd':(i+1)+'th';
-    const streak = p.streak > 1 ? '<span class="streak-badge">'+p.streak+' streak</span>' : (p.streak||0);
-    return `<div class="lb-row"><div class="lb-rank ${rc}">${rl}</div><div class="lb-name">${p.name}</div><div class="lb-cell">${p.points||0}</div><div class="lb-cell">${p.correct||0}/${p.total||0}</div><div class="lb-cell">${streak}</div></div>`;
+    const streak = p.dailyStreak>1?`<span class="streak-badge">${p.dailyStreak}d 🔥</span>`:'';
+    const badges = (p.badges||[]).slice(0,2).map(id=>{ const b=BADGES.find(x=>x.id===id); return b?`<span style="font-size:11px">${b.label.split(' ')[0]}</span>`:''; }).join('');
+    return `<div class="lb-row"><div class="lb-rank ${rc}">${rl}</div><div class="lb-name">${p.name} ${streak} ${badges}</div><div class="lb-cell">${p.weekPoints||0}</div><div class="lb-cell">${p.weekCorrect||0}/${p.total||0}</div><div class="lb-cell">${p.dailyStreak||0}</div></div>`;
   }).join('');
   document.getElementById('stat-players').textContent = leaderboard.length;
   document.getElementById('stat-predictions').textContent = leaderboard.reduce((s,p)=>s+(p.total||0),0);
-  document.getElementById('stat-streak').textContent = Math.max(...leaderboard.map(p=>p.streak||0),0);
+  document.getElementById('stat-streak').textContent = Math.max(...leaderboard.map(p=>p.dailyStreak||0),0);
 }
 
 function renderMyStats() {
   const el = document.getElementById('my-stats-content');
   if (!username) { el.innerHTML = '<div class="empty-state">Set your username above to track your stats.</div>'; return; }
-  const player = leaderboard.find(p => p.name === username);
-  const rank = leaderboard.findIndex(p => p.name === username) + 1;
-  if (!player) { el.innerHTML = '<div class="empty-state">No predictions yet, ' + username + '. Make your first prediction!</div>'; return; }
+  const player = leaderboard.find(p=>p.name===username);
+  const rank = leaderboard.findIndex(p=>p.name===username)+1;
+  if (!player) { el.innerHTML = `<div class="empty-state">No predictions yet, ${username}. Make your first prediction!</div>`; return; }
   const acc = player.total ? Math.round((player.correct/player.total)*100) : 0;
+  const mult = getStreakMultiplier(player.dailyStreak||0);
+  const earnedBadges = BADGES.filter(b=>(player.badges||[]).includes(b.id));
+  const badgeHtml = earnedBadges.length ? `<div style="margin-bottom:1.5rem"><div style="font-size:12px;color:#888;margin-bottom:8px">Badges earned</div><div class="badge-row" style="justify-content:flex-start">${earnedBadges.map(b=>`<div class="badge earned">${b.label}</div>`).join('')}</div></div>` : '';
   el.innerHTML = `<div class="stats-grid" style="margin-bottom:1.5rem">
-    <div class="stat-card"><div class="stat-label">Rank</div><div class="stat-value">#${rank}</div></div>
-    <div class="stat-card"><div class="stat-label">Points</div><div class="stat-value">${player.points}</div></div>
+    <div class="stat-card"><div class="stat-label">Weekly rank</div><div class="stat-value">#${rank}</div></div>
+    <div class="stat-card"><div class="stat-label">Week points</div><div class="stat-value">${player.weekPoints||0}</div></div>
     <div class="stat-card"><div class="stat-label">Accuracy</div><div class="stat-value">${acc}%</div></div>
   </div>
-  <div class="stats-grid">
-    <div class="stat-card"><div class="stat-label">Correct</div><div class="stat-value">${player.correct}</div></div>
-    <div class="stat-card"><div class="stat-label">Total picks</div><div class="stat-value">${player.total}</div></div>
-    <div class="stat-card"><div class="stat-label">Best streak</div><div class="stat-value">${player.streak}</div></div>
-  </div>`;
+  <div class="stats-grid" style="margin-bottom:1.5rem">
+    <div class="stat-card"><div class="stat-label">Day streak</div><div class="stat-value">${player.dailyStreak||0} 🔥</div></div>
+    <div class="stat-card"><div class="stat-label">Multiplier</div><div class="stat-value">${mult}x</div></div>
+    <div class="stat-card"><div class="stat-label">Perfect rounds</div><div class="stat-value">${player.perfectRounds||0}</div></div>
+  </div>
+  ${badgeHtml}`;
 }
 
 function switchTab(tab) {
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['game','leaderboard','history'][i]===tab));
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['game','leaderboard','history'][i]===tab));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.getElementById('section-'+tab).classList.add('active');
   if (tab==='leaderboard') renderLeaderboard();
   if (tab==='history') renderMyStats();
@@ -334,14 +464,14 @@ function switchTab(tab) {
 
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3000);
 }
 
 fetchPrices();
 renderLeaderboard();
 renderMyStats();
+renderStreakBar();
 setInterval(fetchPrices, 60000);
 </script>
 </body>
