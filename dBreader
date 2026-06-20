@@ -42,7 +42,7 @@
     max-width: 320px;
     transition: border-color 0.3s ease;
   }
-  .label-emoji { font-size: 32px; margin-bottom: 6px; }
+  .label-name { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
   .label-text { font-size: 16px; font-weight: 500; }
 
   .btn {
@@ -82,7 +82,7 @@
 </div>
 
 <div class="label-card" id="label-card">
-  <div class="label-emoji" id="label-emoji">🎙️</div>
+  <div class="label-name" id="label-name">Ready?</div>
   <div class="label-text" id="label-text">Tap start and make some noise</div>
 </div>
 
@@ -101,14 +101,13 @@
 // matching range (by minDb) wins, sorted ascending.
 // ─────────────────────────────────────────────
 const THRESHOLDS = [
-  { minDb: 0,   emoji: '🤫', label: 'Library quiet', color: '#1D9E75' },
-  { minDb: 30,  emoji: '🙂', label: 'Normal conversation', color: '#1D9E75' },
-  { minDb: 50,  emoji: '💬', label: "You're getting chatty", color: '#5DCAA5' },
-  { minDb: 65,  emoji: '👶', label: "You've woken up the baby", color: '#BA7517' },
-  { minDb: 80,  emoji: '👵', label: 'Grandma heard that from the kitchen', color: '#EF9F27' },
-  { minDb: 90,  emoji: '🏘️', label: 'The whole neighborhood knows now', color: '#D85A30' },
-  { minDb: 100, emoji: '🚨', label: 'Someone is calling the cops', color: '#D85A30' },
-  { minDb: 110, emoji: '🦅', label: 'Local wildlife has fled the area', color: '#FF3B3B' },
+  { minDb: 0,  name: 'Whisper Wendy',        sub: 'Barely a peep',              color: '#1D9E75' },
+  { minDb: 20, name: 'Casual Carl',          sub: 'Normal indoor voice',        color: '#1D9E75' },
+  { minDb: 35, name: 'Excited Eddie',        sub: 'Getting into it now',        color: '#5DCAA5' },
+  { minDb: 50, name: 'Baby-Waker Barb',      sub: "You've woken the baby",      color: '#BA7517' },
+  { minDb: 65, name: 'Grandma-Alerter Gary', sub: 'Grandma heard that one',     color: '#EF9F27' },
+  { minDb: 80, name: 'Neighborhood Nancy',   sub: 'The whole block knows now',  color: '#D85A30' },
+  { minDb: 95, name: 'Cop-Calling Carl',     sub: "Someone's dialing 911",      color: '#FF3B3B' },
 ];
 // Max dB used for the dial scale (visual only)
 const DIAL_MAX_DB = 120;
@@ -124,7 +123,7 @@ let smoothedDb = 0;
 const dbValueEl = document.getElementById('db-value');
 const dialFgEl = document.getElementById('dial-fg');
 const labelCardEl = document.getElementById('label-card');
-const labelEmojiEl = document.getElementById('label-emoji');
+const labelNameEl = document.getElementById('label-name');
 const labelTextEl = document.getElementById('label-text');
 const toggleBtnEl = document.getElementById('toggle-btn');
 const errorMsgEl = document.getElementById('error-msg');
@@ -150,8 +149,8 @@ function updateUI(db) {
 
   const t = getThresholdFor(db);
   dialFgEl.style.stroke = t.color;
-  labelEmojiEl.textContent = t.emoji;
-  labelTextEl.textContent = t.label;
+  labelNameEl.textContent = t.name;
+  labelTextEl.textContent = t.sub;
   labelCardEl.style.borderColor = t.color;
 
   if (db > peakDb) peakDb = db;
@@ -213,7 +212,7 @@ function stopListening() {
   toggleBtnEl.classList.remove('listening');
   dbValueEl.textContent = '--';
   dialFgEl.style.strokeDashoffset = DIAL_CIRCUMFERENCE;
-  labelEmojiEl.textContent = '🎙️';
+  labelNameEl.textContent = 'Ready?';
   labelTextEl.textContent = 'Tap start and make some noise';
   labelCardEl.style.borderColor = '#2a2a2a';
 }
